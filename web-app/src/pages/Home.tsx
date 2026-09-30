@@ -1,9 +1,7 @@
-import { 
-  Box, 
+import {  
   Button, 
   Container, 
   Flex, 
-  Text,
   Card,
   Heading,
   Grid,
