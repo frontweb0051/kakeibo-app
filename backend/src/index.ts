@@ -5,15 +5,15 @@ import { Client } from "pg";
 
 const app = new Hono()
 
-app.use(
-  "/*",
-  cors({
-    origin: [env.FRONTEND_URL],
-    allowMethods: ["GET","POST", "PUT", "DELETE", "OPTION"],
-    allowHeaders: ["Content-Type", "Autorization"],
-    credentials: true,
-  }),
-);
+// app.use(
+//   "/*",
+//   cors({
+//     origin: [env.FRONTEND_URL],
+//     allowMethods: ["GET","POST", "PUT", "DELETE", "OPTION"],
+//     allowHeaders: ["Content-Type", "Autorization"],
+//     credentials: true,
+//   }),
+// );
 
 
 // PostgreSQLクライアントの初期化
