@@ -1,0 +1,177 @@
+openapi: 3.0.3
+info:
+  title: 家計簿 API
+  version: 1.0.0
+  description: Honoで実装された家計簿アプリのAPIです。
+servers:
+  - url: http://localhost:3000
+    description: ローカル開発サーバー
+
+paths:
+  /transactions:
+    get:
+      summary: 取引一覧と合計を取得
+      description: >-
+        typeにincome、expense、allのいずれかを指定します。
+        現在の実装はtypeを検証しますが、一覧の絞り込みにはまだ使用していません。
+      operationId: getTransactions
+      parameters:
+        - $ref: '#/components/parameters/TransactionType'
+      responses:
+        '200':
+          description: 取引一覧と合計金額
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionListResponse'
+              example:
+                transactions:
+                  - id: 1
+                    item: 給料
+                    amount: 10000
+                    date: '2025-01-01'
+                  - id: 2
+                    item: 食費
+                    amount: -10000
+                    date: '2025-01-02'
+                totalCount: 2
+                totalAmount: 0
+        '400':
+          $ref: '#/components/responses/InvalidTransactionType'
+
+    post:
+      summary: 取引を登録
+      description: >-
+        現在の実装では受け取った本文をそのまま201レスポンスとして返します。
+        データベース等への永続化は行っていません。
+      operationId: createTransaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTransactionRequest'
+            example:
+              item: 食費
+              amount: -1200
+              date: '2025-01-15'
+      responses:
+        '201':
+          description: 受け取った取引データ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTransactionRequest'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: JSON本文の解析などで予期しないエラーが発生
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  parameters:
+    TransactionType:
+      name: type
+      in: query
+      required: true
+      description: 取得対象の取引区分
+      schema:
+        type: string
+        enum:
+          - income
+          - expense
+          - all
+
+  schemas:
+    Transaction:
+      type: object
+      required:
+        - id
+        - item
+        - amount
+        - date
+      properties:
+        id:
+          type: integer
+          example: 1
+        item:
+          type: string
+          example: 食費
+        amount:
+          type: number
+          description: 正数は収入、負数は支出を表します。
+          example: -1200
+        date:
+          type: string
+          format: date
+          example: '2025-01-15'
+
+    CreateTransactionRequest:
+      type: object
+      required:
+        - item
+        - amount
+        - date
+      properties:
+        item:
+          type: string
+          description: 取引の品目
+          example: 食費
+        amount:
+          type: number
+          not:
+            enum:
+              - 0
+          description: 0以外の金額。正数は収入、負数は支出を表します。
+          example: -1200
+        date:
+          type: string
+          format: date
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          description: YYYY-MM-DD形式の日付
+          example: '2025-01-15'
+
+    TransactionListResponse:
+      type: object
+      required:
+        - transactions
+        - totalCount
+        - totalAmount
+      properties:
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+        totalCount:
+          type: integer
+          example: 2
+        totalAmount:
+          type: number
+          description: transactions内のamountの合計
+          example: 0
+
+    ErrorResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: 必須項目が不足しています。
+
+  responses:
+    BadRequest:
+      description: リクエスト内容が不正
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InvalidTransactionType:
+      description: typeが指定されていないか、許可されていない値
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
