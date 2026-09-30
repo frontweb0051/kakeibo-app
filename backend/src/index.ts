@@ -3,12 +3,13 @@ import { cors } from "hono/cors";
 import { env } from "./env.js";
 import { Client } from "pg";
 
+
 const app = new Hono()
 
 app.use(
   "/*",
   cors({
-    origin: [env.FRONTEND_URL],
+    origin: [env.FRONTEND_URL, "http://localhost:5173"],
     allowMethods: ["GET","POST", "PUT", "DELETE", "OPTION"],
     allowHeaders: ["Content-Type", "Autorization"],
     credentials: true,
