@@ -14,7 +14,7 @@ export const RecentIncomeTransactionList: React.FC<{maxTransactions: number;}> =
   const { transactionList, isLoading } = useIncomeTransactions();
 
   if (isLoading) {
-    return <Text>現在読み込み中</Text>
+    return <Text>読み込み中</Text>
   }
 
   if (!transactionList) {
@@ -26,7 +26,12 @@ export const RecentIncomeTransactionList: React.FC<{maxTransactions: number;}> =
 }
 
 export const RecentExpenseTransactionList: React.FC<{maxTransactions: number}> = ({maxTransactions}) => {
-  const { transactionList } = useExpenseTransactions();
+  const { transactionList, isLoading } = useExpenseTransactions();
+
+  if (isLoading) {
+    return <Text>読み込み中</Text>
+  }
+
   if (!transactionList) {
     return <Text>支出データがありません</Text>
   }
