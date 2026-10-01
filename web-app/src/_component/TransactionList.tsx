@@ -11,7 +11,11 @@ type Transaction = {
 };
 
 export const RecentIncomeTransactionList: React.FC<{maxTransactions: number;}> = ({maxTransactions}) => {
-  const { transactionList } = useIncomeTransactions();
+  const { transactionList, isLoading } = useIncomeTransactions();
+
+  if (isLoading) {
+    return <Text>現在読み込み中</Text>
+  }
 
   if (!transactionList) {
     return <Text>収入データがありません</Text>
