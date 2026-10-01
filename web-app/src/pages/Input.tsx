@@ -16,7 +16,7 @@ import { useAddTransactions } from "@/hooks/useAddTransactions";
 type TransactionType = "income" | "expense";
 
 function InputPage() {
-  const { addTransaction, createTransactionData } = useAddTransactions();
+  const { addTransaction, createTransactionData, isLoading } = useAddTransactions();
   const [transactionType, setTransactionType] = React.useState<TransactionType>("expense");
   const [item, setItem] = React.useState("");
   const [amount, setAmount] = React.useState("");
@@ -132,6 +132,8 @@ function InputPage() {
                 colorPalette="teal"
                 flex={1}
                 fontWeight="bold"
+                loading={isLoading}
+                disabled={isLoading}
               >
                 登録
               </Button>
